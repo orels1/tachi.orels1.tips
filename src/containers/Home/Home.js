@@ -2,17 +2,12 @@ import React from 'react';
 // import { push } from 'react-router-redux';
 // import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import Game from '../../components/Game';
 
 export const Home = (props) => {
   const games = [1, 2, 3, 4];
-  const blocks = games.map(game => (
-    <div className="game-block" key={game}>
-      <div className="game-block__header" />
-      <div className="game-block__body">
-        <div className="game-block__title" />
-        <div className="game-block__info" />
-      </div>
-    </div>
+  const blocks = games.map((game, index) => (
+    <Game key={game} order={index} />
   ));
 
   return(
