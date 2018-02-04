@@ -3,23 +3,64 @@ import React from 'react';
 // import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Game from '../../components/Game';
+import Pad from '../../components/Pad';
 
-export const Home = (props) => {
-  const games = [1, 2, 3, 4];
-  const blocks = games.map((game, index) => (
-    <Game key={game} order={index} />
-  ));
+export class Home extends React.Component {
+  constructor(props) {
+    super(props);
 
-  return(
-    <div className="home">
-      <h1 className="home__title">Tachi</h1>
-      <p className="home__text">Welcome!</p>
-      {/* <button className="home__about" onClick={() => props.changePage()}>About Tachi</button> */}
-      <div className="preview-grid">
-        {blocks}
+    this.state = {
+      padVisible: false,
+      selectedGame: null,
+      selectedGameIndex: null,
+    }
+
+    this.handlePadToggle = this.handlePadToggle.bind(this);
+  }
+
+  handlePadToggle(game, order) {
+    if (this.state.padVisible) {
+      this.setState({
+        ...this.state,
+        padVisible: false,
+        selectedGame: null,
+        selectedGameIndex: null
+      });
+    } else {
+      this.setState({
+        ...this.state,
+        padVisible: true,
+        selectedGame: game,
+        selectedGameIndex: order
+      });
+    }
+  }
+  
+
+  render() {
+    const games = ['Doom (2016)', 'Horizon: Zero Dawn', 'Forza Horizon 3', 'The Legend of Zelda: BotW'];
+    const blocks = games.map((game, index) => (
+      <Game
+        onClick={this.handlePadToggle}
+        game={game}
+        key={game}
+        order={index}
+        selected={this.state.selectedGameIndex === index}
+      />
+    ));
+
+    return(
+      <div className="home">
+        <h1 className="home__title">Tachi</h1>
+        <p className="home__text">Welcome!</p>
+        {/* <button className="home__about" onClick={() => props.changePage()}>About Tachi</button> */}
+        <div className="preview-grid">
+          {blocks}
+        </div>
+        <Pad visible={this.state.padVisible} name={this.state.selectedGame} />
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 // const mapDispatchToProps = dispatch => bindActionCreators({

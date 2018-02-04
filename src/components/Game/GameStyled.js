@@ -38,6 +38,7 @@ export const GameStyled = styled.div`
   background: #353740;
   overflow: hidden;
   cursor: pointer;
+  ${ props => props.selected ? 'border: 2px solid rgba(255,255,255, .3);' : 'border: none;' }
 
   &:hover ${Body} {
     bottom: 0px;
