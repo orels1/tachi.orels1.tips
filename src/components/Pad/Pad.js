@@ -1,12 +1,14 @@
 import React from 'react';
 import {
   PadStyled,
-  Name
+  Name,
+  Short
 } from './PadStyled';
 
-const Pad = ({ name, visible }) => (
+const Pad = ({ name, short, visible }) => (
   <PadStyled visible={visible}>
     <Name>{name}</Name>
+    <Short>{short}</Short>
   </PadStyled>
 )
 

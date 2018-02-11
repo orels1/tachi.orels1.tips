@@ -19,8 +19,15 @@ export const PadStyled = styled.div`
 `;
 
 export const Name = styled.div`
-  font-size: 3.5em;
+  font-size: 3em;
   color: #fff;
   font-weight: 600;
   text-align: left;
+`;
+
+export const Short = styled.div`
+  font-size: 1em;
+  color: rgba(255,255,255,.6);
+  text-align: left;
+  line-height: 1.5em;
 `;

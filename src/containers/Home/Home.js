@@ -9,10 +9,20 @@ export class Home extends React.Component {
   constructor(props) {
     super(props);
 
+    const token = localStorage.getItem('token');
+
     this.state = {
       padVisible: false,
-      selectedGame: null,
+      selectedGame: {},
       selectedGameIndex: null,
+      gamesList: [
+        '3030-20654', // Doom
+        '3030-49973', // Horizon: Zero Dawn
+        '3030-54214', // Forza Horizon 3
+        '3030-41355' // The Legend of Zelda: Breath of the Wild
+      ],
+      games: [],
+      token,
     }
 
     this.handlePadToggle = this.handlePadToggle.bind(this);
@@ -23,7 +33,7 @@ export class Home extends React.Component {
       this.setState({
         ...this.state,
         padVisible: false,
-        selectedGame: null,
+        selectedGame: {},
         selectedGameIndex: null
       });
     } else {
@@ -35,15 +45,27 @@ export class Home extends React.Component {
       });
     }
   }
+
+  async componentDidMount() {
+    if (!this.state.token) return; // bail out if no token is present
+    const resp = await Promise.all(this.state.gamesList.map((g) => {
+      const url = encodeURIComponent(`https://www.giantbomb.com/api/game/${g}/?api_key=${this.state.token}&format=json`);
+      return fetch(`http://localhost:5000?url=${url}`, { cache: 'cache' })
+    }));
+    const json = await Promise.all(resp.map(r => r.json()));
+    this.setState({
+      games: json.map(g => g.results)
+    })
+  }
   
 
   render() {
-    const games = ['Doom (2016)', 'Horizon: Zero Dawn', 'Forza Horizon 3', 'The Legend of Zelda: BotW'];
-    const blocks = games.map((game, index) => (
+    const list = this.state.games.length > 0 ? this.state.games : this.state.gamesList;
+    const blocks = list.map((game, index) => (
       <Game
         onClick={this.handlePadToggle}
-        game={game}
-        key={game}
+        game={typeof game === 'object' ? game : {}}
+        key={game.guid ? game.guid : game}
         order={index}
         selected={this.state.selectedGameIndex === index}
       />
@@ -57,7 +79,11 @@ export class Home extends React.Component {
         <div className="preview-grid">
           {blocks}
         </div>
-        <Pad visible={this.state.padVisible} name={this.state.selectedGame} />
+        <Pad
+          visible={this.state.padVisible}
+          name={this.state.selectedGame.name}
+          short={this.state.selectedGame.deck}
+        />
       </div>
     );
   }
