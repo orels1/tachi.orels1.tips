@@ -6,7 +6,16 @@ import rootReducer from '../reducers'
 
 export const history = createHistory()
 
-const initialState = {}
+const initialState = {
+  games: {
+    list: [
+      '3030-20654', // Doom
+      '3030-49973', // Horizon: Zero Dawn
+      '3030-54214', // Forza Horizon 3
+      '3030-41355' // The Legend of Zelda: Breath of the Wild
+    ]
+  }
+}
 const enhancers = []
 const middleware = [
   thunk,

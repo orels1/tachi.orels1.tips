@@ -1,9 +1,9 @@
 import React from 'react';
-// import { push } from 'react-router-redux';
-// import { bindActionCreators } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Game from '../../components/Game';
 import Pad from '../../components/Pad';
+import { fetchGames } from '../../actions/games-actions';
 
 export class Home extends React.Component {
   constructor(props) {
@@ -15,13 +15,6 @@ export class Home extends React.Component {
       padVisible: false,
       selectedGame: {},
       selectedGameIndex: null,
-      gamesList: [
-        '3030-20654', // Doom
-        '3030-49973', // Horizon: Zero Dawn
-        '3030-54214', // Forza Horizon 3
-        '3030-41355' // The Legend of Zelda: Breath of the Wild
-      ],
-      games: [],
       token,
     }
 
@@ -47,20 +40,12 @@ export class Home extends React.Component {
   }
 
   async componentDidMount() {
-    if (!this.state.token) return; // bail out if no token is present
-    const resp = await Promise.all(this.state.gamesList.map((g) => {
-      const url = encodeURIComponent(`https://www.giantbomb.com/api/game/${g}/?api_key=${this.state.token}&format=json`);
-      return fetch(`http://localhost:5000?url=${url}`, { cache: 'cache' })
-    }));
-    const json = await Promise.all(resp.map(r => r.json()));
-    this.setState({
-      games: json.map(g => g.results)
-    })
+    await this.props.fetchGames({ ids: this.props.list, token: this.state.token });
   }
   
 
   render() {
-    const list = this.state.games.length > 0 ? this.state.games : this.state.gamesList;
+    const list = this.props.games.length > 0 ? this.props.games : this.props.list;
     const blocks = list.map((game, index) => (
       <Game
         onClick={this.handlePadToggle}
@@ -89,11 +74,14 @@ export class Home extends React.Component {
   }
 };
 
-// const mapDispatchToProps = dispatch => bindActionCreators({
-//   changePage: () => push('/about-us')
-// }, dispatch);
-
 export default connect(
-  null, 
-  // mapDispatchToProps
+  ({ games }) => ({
+    list: games.list,
+    games: games.data,
+    fetching: games.fetching,
+    fail: games.fetchingFail
+  }),
+  (dispatch) => bindActionCreators({
+    fetchGames
+  }, dispatch)
 )(Home);
